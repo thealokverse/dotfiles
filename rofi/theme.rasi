@@ -1,0 +1,59 @@
+* {
+  bg: #0e1116;
+  bg-alt: #161a22;
+  fg: #ebdbb2;
+  fg-alt: #928374;
+  accent: #fe8019;
+
+  font: "JetBrainsMono Nerd Font 12";
+}
+
+window {
+    width: 45%;
+    location: center;
+    anchor: center;
+    border-radius: 12px;
+    border: 2px;
+    border-color: #fe8019;
+    background-color: #0e1116ee;
+}
+
+inputbar {
+  background-color: @bg-alt;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+listview {
+  spacing: 8px;
+}
+
+element {
+  background-color: transparent;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+element selected {
+  background-color: @bg-alt;
+  text-color: @accent;
+}
+
+mainbox {
+    children: [ inputbar, listview ];
+}
+
+listview {
+    lines: 7;
+    fixed-height: true;
+    scrollbar: true;
+    max-height: 280px;
+}
+
+element normal, element selected {
+    border: 0px;
+}
+
+element-text {
+    padding: 2px 6px;
+}

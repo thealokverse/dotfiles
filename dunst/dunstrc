@@ -1,0 +1,44 @@
+[global]
+    monitor = 0
+    follow = mouse
+    width = 320
+    height = 120
+    origin = top-right
+    offset = 12x48
+    scale = 0
+    gap_size = 6
+    padding = 12
+    horizontal_padding = 16
+    text_icon_padding = 0
+    border_width = 2
+    frame_width = 2
+    frame_color = "#cba6f7"
+    corner_radius = 10
+    font = JetBrains Mono 10
+    line_height = 2
+    markup = full
+    format = "<b>%s</b>\n%b"
+    word_wrap = yes
+    sort = yes
+    shrink = no
+    transparency = 10
+    separator_color = frame
+    icon_path = /usr/share/icons/Papirus/16x16/status/:/usr/share/icons/Papirus/16x16/devices/
+
+[urgency_low]
+    background = "#1e1e2e"
+    foreground = "#cdd6f4"
+    frame_color = "#313244"
+    timeout = 4
+
+[urgency_normal]
+    background = "#1e1e2e"
+    foreground = "#cdd6f4"
+    frame_color = "#cba6f7"
+    timeout = 6
+
+[urgency_critical]
+    background = "#1e1e2e"
+    foreground = "#f38ba8"
+    frame_color = "#f38ba8"
+    timeout = 0

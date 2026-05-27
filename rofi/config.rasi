@@ -1,0 +1,12 @@
+configuration {
+    modi: "drun";
+    show-icons: true;
+
+    display-drun: "";   /* empty title */
+    drun-display-format: "{name}";
+
+    lines: 7;           /* visible entries */
+    columns: 1;
+}
+@theme "theme.rasi"
+

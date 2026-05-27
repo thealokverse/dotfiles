@@ -1,0 +1,248 @@
+;; ══════════════════════════════════════
+;; VARIABLES
+;; ══════════════════════════════════════
+
+(defpoll cpu_usage  :interval "3s"
+  "top -bn1 | grep 'Cpu' | awk '{print int($2)}'")
+(defpoll ram_usage  :interval "3s"
+  "free | awk '/Mem/{printf int($3/$2*100)}'")
+(defpoll disk_usage :interval "30s"
+  "df -h / | awk 'NR==2{print int($5)}'")
+(defpoll uptime_str :interval "60s"
+  "uptime -p | sed 's/up //'")
+(defpoll clock_time :interval "1s"  "date '+%I:%M'")
+(defpoll clock_ampm :interval "1s"  "date '+%p'")
+(defpoll clock_date :interval "60s" "date '+%A, %d %B'")
+
+;; ══════════════════════════════════════
+;; SIDEBAR
+;; ══════════════════════════════════════
+
+(defwidget sidebar []
+  (box :class "sidebar"
+       :orientation "v"
+       :space-evenly false
+
+    ;; Profile photo
+    (image :path "/home/alok/.config/eww/images/pfp.jpg"
+       :image-width 120
+       :image-height 120
+       :class "pfp"
+       :halign "center")
+
+    ;; Name
+    (label :text "alok"
+           :class "username"
+           :halign "center")
+
+    ;; Host
+    (label :text "fedora"
+           :class "hostname"
+           :halign "center")
+
+    ;; City
+    (label :text "󰍉  Neo-Tokyo"
+           :class "city-text"
+           :halign "center")
+
+    ;; Divider
+    (box :class "divider")
+
+    ;; Section title
+    (label :text "SYSTEM"
+           :class "section-title"
+           :halign "start")
+
+    ;; CPU label row
+    (box :orientation "h" :space-evenly false :halign "fill"
+      (label :text "󰻠  CPU" :class "stat-icon-cpu")
+      (box :hexpand true)
+      (label :text "${cpu_usage}%" :class "stat-val-cpu"))
+
+    ;; CPU bar
+    (scale :class "bar-cpu"
+           :value cpu_usage
+           :min 0 :max 100
+           :draw-value false)
+
+    ;; RAM label row
+    (box :orientation "h" :space-evenly false :halign "fill"
+      (label :text "󰍛  RAM" :class "stat-icon-ram")
+      (box :hexpand true)
+      (label :text "${ram_usage}%" :class "stat-val-ram"))
+
+    ;; RAM bar
+    (scale :class "bar-ram"
+           :value ram_usage
+           :min 0 :max 100
+           :draw-value false)
+
+    ;; DISK label row
+    (box :orientation "h" :space-evenly false :halign "fill"
+      (label :text "󰋊  DISK" :class "stat-icon-disk")
+      (box :hexpand true)
+      (label :text "${disk_usage}%" :class "stat-val-disk"))
+
+    ;; DISK bar
+    (scale :class "bar-disk"
+           :value disk_usage
+           :min 0 :max 100
+           :draw-value false)))
+
+;; ══════════════════════════════════════
+;; CALENDAR
+;; ══════════════════════════════════════
+
+(defwidget cal-widget []
+  (box :class "calendar-box"
+       :orientation "v"
+       :space-evenly false
+
+    (box :orientation "h"
+         :halign "center"
+         :space-evenly false
+         :valign "end"
+      (label :class "clock-time" :text clock_time)
+      (label :class "clock-ampm" :text clock_ampm :valign "end"))
+
+    (label :class "clock-date"
+           :text clock_date
+           :halign "center")
+
+    (calendar :show-details false
+              :show-week-numbers false
+              :show-heading true
+              :show-day-names true)))
+
+;; ══════════════════════════════════════
+;; POWER MENU
+;; ══════════════════════════════════════
+
+(defwidget pwr-btn [icon cls label cmd]
+  (box :orientation "v"
+       :halign "center"
+       :space-evenly false
+       :class "btn-wrap"
+    (button :class "power-btn ${cls}"
+            :onclick cmd
+            :tooltip label
+            icon)
+    (label :class "btn-label"
+           :text label
+           :halign "center")))
+
+(defwidget power-widget []
+  (box :class "power-menu"
+       :orientation "v"
+       :space-evenly false
+       :halign "center"
+
+    ;; Title
+    (label :class "power-title"
+           :text "SESSION"
+           :halign "center")
+
+    ;; Uptime badge
+    (box :class "uptime-pill"
+         :halign "center"
+      (label :class "uptime-text"
+             :text "󰅐  ${uptime_str}"))
+
+    ;; Row 1 — Lock, Sleep, Logout
+    (box :class "power-row"
+         :orientation "h"
+         :halign "center"
+         :space-evenly false
+
+      (box :class "btn-wrap"
+           :orientation "v"
+           :halign "center"
+           :space-evenly false
+        (button :class "power-btn btn-lock"
+                :onclick "bash /home/alok/.config/eww/scripts/lock.sh; eww close power-menu"
+                :tooltip "Lock"
+                "󰌾")
+        (label :class "btn-label" :text "LOCK" :halign "center"))
+
+      (box :class "btn-wrap"
+           :orientation "v"
+           :halign "center"
+           :space-evenly false
+        (button :class "power-btn btn-sleep"
+                :onclick "systemctl suspend; eww close power-menu"
+                :tooltip "Sleep"
+                "󰤄")
+        (label :class "btn-label" :text "SLEEP" :halign "center"))
+
+      (box :class "btn-wrap"
+           :orientation "v"
+           :halign "center"
+           :space-evenly false
+        (button :class "power-btn btn-logout"
+                :onclick "i3-msg exit; eww close power-menu"
+                :tooltip "Logout"
+                "󰍃")
+        (label :class "btn-label" :text "LOGOUT" :halign "center")))
+
+    ;; Row 2 — Restart, Shutdown
+    (box :class "power-row"
+         :orientation "h"
+         :halign "center"
+         :space-evenly false
+
+      (box :class "btn-wrap"
+           :orientation "v"
+           :halign "center"
+           :space-evenly false
+        (button :class "power-btn btn-restart"
+                :onclick "systemctl reboot; eww close power-menu"
+                :tooltip "Restart"
+                "󰑓")
+        (label :class "btn-label" :text "RESTART" :halign "center"))
+
+      (box :class "btn-wrap"
+           :orientation "v"
+           :halign "center"
+           :space-evenly false
+        (button :class "power-btn btn-shutdown"
+                :onclick "systemctl poweroff; eww close power-menu"
+                :tooltip "Shutdown"
+                "󰐥")
+        (label :class "btn-label" :text "SHUTDOWN" :halign "center")))))
+
+;; ══════════════════════════════════════
+;; WINDOWS
+;; ══════════════════════════════════════
+
+(defwindow sidebar
+  :monitor 0
+  :geometry (geometry :x "16px"
+                      :y "56px"
+                      :width "260px"
+                      :anchor "top left")
+  :stacking "fg"
+  :exclusive false
+  :focusable false
+  (sidebar))
+
+(defwindow calendar
+  :monitor 0
+  :geometry (geometry :x "16px"
+                      :y "56px"
+                      :width "250px"
+                      :anchor "top right")
+  :stacking "fg"
+  :exclusive false
+  :focusable false
+  (cal-widget))
+
+(defwindow power-menu
+  :monitor 0
+  :geometry (geometry :x "0px"
+                      :y "0px"
+                      :width "420px"
+                      :anchor "center")
+  :stacking "overlay"
+  :exclusive false
+  :focusable true
+  (power-widget))
